@@ -1,0 +1,13 @@
+# Node /frontend
+node_modules/
+dist/
+
+# Java /backend
+target/
+
+#IDEs
+.vscode/
+.idea/
+
+#OS cruft
+.DS_Store
