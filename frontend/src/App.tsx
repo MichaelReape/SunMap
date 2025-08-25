@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./App.css";
+import MapView from "./MapView";
 
 function App() {
   //stores the entered address
@@ -23,7 +24,8 @@ function App() {
       //parse the json
       const data = await response.json();
       //update the result state
-      setResult(data);
+      // setResult(data);
+      setResult({ lat: Number(data.lat), lon: Number(data.lon) });
     } catch (error) {
       //need to handle 404 not found at some point
       console.error(error);
@@ -33,7 +35,6 @@ function App() {
   return (
     <div style={{ padding: "2rem" }}>
       <h1>SunMap Geocode Test</h1>
-
       {/* Textbox for the address */}
       <input
         type="text"
@@ -42,22 +43,10 @@ function App() {
         placeholder="Enter an address"
         style={{ marginRight: "1rem", padding: "0.5rem" }}
       />
-
       {/* Button to trigger backend call */}
       <button onClick={handleSearch}>Search</button>
-
-      {/* Show the result as JSON */}
-      {result && (
-        <pre
-          style={{
-            marginTop: "1rem",
-            background: "#406b3dff",
-            padding: "1rem",
-          }}
-        >
-          {JSON.stringify(result, null, 2)}
-        </pre>
-      )}
+      {/* Map view */}
+      {result && <MapView lat={result.lat} lon={result.lon} />}
     </div>
   );
 }
