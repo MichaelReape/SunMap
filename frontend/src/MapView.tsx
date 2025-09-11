@@ -13,7 +13,7 @@ export default function MapView({ lat, lon }: MapViewProps) {
   return (
     <MapContainer
       center={[lat, lon]}
-      zoom={13}
+      zoom={20}
       style={{ height: "100vh", width: "100%" }}
     >
       <TileLayer

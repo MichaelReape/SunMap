@@ -40,3 +40,34 @@
 .read-the-docs {
   color: #888;
 }
+#loginSignupModal {
+  position: fixed;
+  inset: 0; /* replaces top/bottom/width/height */
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.loginModalContent {
+  background: rgba(126, 89, 141, 0.747);
+  padding: 2rem;
+  border-radius: 10px;
+  width: 400px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  color: #213547;
+}
+.buttonStyle {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  background-color: #646cff;
+  color: white;
+  cursor: pointer;
+}
+.buttonStyle:hover {
+  background-color: #535bf2;
+}
