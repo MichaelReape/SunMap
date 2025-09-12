@@ -7,6 +7,7 @@ function App() {
   const [showModal, setShowModal] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  //update this to use useeffect later
   const handleLoginSignUpModal = () => {
     try {
       if (showModal) {
@@ -25,6 +26,11 @@ function App() {
       //have to do some sanitization here, valid email, password format (caps, numbers, special, length)
       console.log(email);
       console.log(password);
+      //send to backend for verification
+
+      //close the modal
+      setShowModal(false);
+      return;
     } catch (error) {
       console.log(error);
     }
