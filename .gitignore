@@ -12,3 +12,5 @@ target/
 #OS cruft
 .DS_Store
 notes.md
+
+.env
