@@ -14,3 +14,4 @@ target/
 notes.md
 
 .env
+.env.properties
