@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sunmap.app.DTO.UserCreateDTO;
+import com.sunmap.app.DTO.UserViewDTO;
 import com.sunmap.app.entity.User;
 import com.sunmap.app.service.UserService;
 
@@ -16,7 +18,7 @@ import com.sunmap.app.service.UserService;
 @RequestMapping("/api/users")
 public class UserController {
     // api access
-    private UserService userService;
+    private final UserService userService;
 
     // constructor injection
     public UserController(UserService userService) {
@@ -25,8 +27,10 @@ public class UserController {
 
     // save user
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.saveUser(user);
+    public UserViewDTO createUser(@RequestBody UserCreateDTO dto) {
+        System.out.println("In UserController.java");
+        System.out.println("Creating user with email: " + dto.getEmail());
+        return userService.saveUser(dto);
     }
 
     // get user by id
