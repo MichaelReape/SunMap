@@ -21,12 +21,29 @@ function App() {
       console.log(error);
     }
   };
-  const handleLoginSignUp = () => {
+  const handleSignUp = async () => {
     try {
       //have to do some sanitization here, valid email, password format (caps, numbers, special, length)
       console.log(email);
       console.log(password);
       //send to backend for verification
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/users`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Signup failed");
+      }
+      const data = await response.json;
+      console.log("User created ", data);
 
       //close the modal
       setShowModal(false);
@@ -36,6 +53,12 @@ function App() {
     }
   };
 
+  // const handlesLogin = async () => {
+  //   console.log("Login clicked");
+  //   //need to implement login functionality
+  //   //will use spring security for this
+  //   //will need to create a new endpoint in the backend for login
+  // };
   //stores the entered address
   const [address, setAddress] = useState("");
   //stores the result of the API call
@@ -95,7 +118,10 @@ function App() {
               placeholder="Password"
             />
             {/* how to add style from .css to button? */}
-            <button className="buttonStyle" onClick={handleLoginSignUp}>
+            <button className="buttonStyle" onClick={handleSignUp}>
+              SignUp
+            </button>
+            <button className="buttonStyle" onClick={handlesLogin}>
               Login
             </button>
             <button className="buttonStyle" onClick={() => setShowModal(false)}>

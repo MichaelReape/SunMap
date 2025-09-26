@@ -14,10 +14,11 @@ import com.sunmap.app.repository.UserRepository;
 
 @Service
 public class UserService {
+    // inject repository and password encoder
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // inject repository and password encoder
+    // constructor injection
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -25,21 +26,31 @@ public class UserService {
 
     // save the user
     public UserViewDTO saveUser(UserCreateDTO dto) {
-        System.out.println("In UserService.java");
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
+        }
         User newUser = new User(dto.getEmail(), passwordEncoder.encode(dto.getPassword()));
         User savedUser = userRepository.save(newUser);
         return convertToViewDTO(savedUser);
     }
 
     // get user by id
-    public User getUserById(long id) {
-        return userRepository.findById(id)
+    public UserViewDTO getUserById(long id) {
+        User temp = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        return convertToViewDTO(temp);
     }
 
     // get all users
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserViewDTO> getAllUsers() {
+        return userRepository.findAll().stream().map(this::convertToViewDTO).toList();
+    }
+
+    public void deleteUser(long id) {
+        if (!userRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        userRepository.deleteById(id);
     }
 
     // convert to view DTO
