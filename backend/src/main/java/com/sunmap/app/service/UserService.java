@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.sunmap.app.DTO.LoginRequestDTO;
 import com.sunmap.app.DTO.UserCreateDTO;
 import com.sunmap.app.DTO.UserViewDTO;
 import com.sunmap.app.entity.User;
@@ -36,9 +37,9 @@ public class UserService {
 
     // get user by id
     public UserViewDTO getUserById(long id) {
-        User temp = userRepository.findById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-        return convertToViewDTO(temp);
+        return convertToViewDTO(user);
     }
 
     // get all users
@@ -46,6 +47,7 @@ public class UserService {
         return userRepository.findAll().stream().map(this::convertToViewDTO).toList();
     }
 
+    // delete user by id
     public void deleteUser(long id) {
         if (!userRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
@@ -53,9 +55,20 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    // Authenticate user
+    public UserViewDTO authenticateUser(LoginRequestDTO requestDTO) {
+
+        User user = userRepository.findByEmail(requestDTO.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        if (!passwordEncoder.matches(requestDTO.getPassword(), user.getPasswordHash())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+        }
+        return convertToViewDTO(user);
+    }
+
     // convert to view DTO
     private UserViewDTO convertToViewDTO(User user) {
         return new UserViewDTO(user.getId(), user.getEmail(), user.getCreatedAt());
     }
-
 }

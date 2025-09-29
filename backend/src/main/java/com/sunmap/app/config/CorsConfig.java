@@ -21,7 +21,7 @@ public class CorsConfig {
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // HTTP verbs your frontend may use
                         .allowedHeaders("*") // allow all headers from the browser request
                         .exposedHeaders("Location") // example: expose Location for POST-created resources
-                        .allowCredentials(false) // keep false unless you need cookies/auth across origins
+                        .allowCredentials(true) // keep false unless you need cookies/auth across origins
                         .maxAge(3600); // cache preflight (OPTIONS) responses for 1 hour
             }
         };

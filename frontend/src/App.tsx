@@ -53,12 +53,36 @@ function App() {
     }
   };
 
-  // const handlesLogin = async () => {
-  //   console.log("Login clicked");
-  //   //need to implement login functionality
-  //   //will use spring security for this
-  //   //will need to create a new endpoint in the backend for login
-  // };
+  const handlesLogin = async () => {
+    try {
+      console.log("Login clicked");
+      //need to implement login functionality
+      //will use spring security for this
+      //will need to create a new endpoint in the backend for login
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/users/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            email: email,
+            password: password,
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Login failed");
+      }
+      const data = await response.json();
+      console.log("User logged in ", data);
+      //close the modal
+      setShowModal(false);
+      return;
+    } catch (error) {
+      console.log(error);
+    }
+  };
   //stores the entered address
   const [address, setAddress] = useState("");
   //stores the result of the API call
