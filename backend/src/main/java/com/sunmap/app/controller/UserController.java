@@ -4,12 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,46 +17,45 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sunmap.app.DTO.LoginRequestDTO;
 import com.sunmap.app.DTO.UserCreateDTO;
 import com.sunmap.app.DTO.UserViewDTO;
+import com.sunmap.app.service.AuthService;
 import com.sunmap.app.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
     // api access
     private final UserService userService;
+    private final AuthService authService;
 
     // constructor injection
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuthService authService) {
         this.userService = userService;
+        this.authService = authService;
     }
 
     // save user
     @PostMapping
-    public UserViewDTO createUser(@RequestBody UserCreateDTO dto) {
-        return userService.saveUser(dto);
+    public UserViewDTO createUser(@Valid @RequestBody UserCreateDTO dto, HttpServletResponse response,
+            HttpServletRequest request) {
+        UserViewDTO newUser = userService.saveUser(dto);
+        // Automatically log in the user after registration
+        authService.establishSession(newUser.getEmail(), request, response);
+        return newUser;
     }
 
     // login user
     // will implement later with spring security
     @PostMapping("/login")
-    public ResponseEntity<UserViewDTO> loginUser(@RequestBody LoginRequestDTO loginRequest,
+    public ResponseEntity<UserViewDTO> loginUser(@Valid @RequestBody LoginRequestDTO loginRequest,
             HttpServletResponse response, HttpServletRequest request) {
         // Authenticate the user
         UserViewDTO dto = userService.authenticateUser(loginRequest);
-        // Create an authentication token
-        Authentication auth = new UsernamePasswordAuthenticationToken(dto.getEmail(), null,
-                List.of(new SimpleGrantedAuthority("USER")));
-        // Set the security context
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(auth);
-        SecurityContextHolder.setContext(context);
-        // Save the security context
-        new HttpSessionSecurityContextRepository().saveContext(context, request, response);
-        request.getSession(true);
-
+        // Create an authentication token and establish session
+        authService.establishSession(dto.getEmail(), request, response);
         return ResponseEntity.ok(dto);
     }
 
