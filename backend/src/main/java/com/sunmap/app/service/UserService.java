@@ -42,6 +42,13 @@ public class UserService {
         return convertToViewDTO(user);
     }
 
+    // get user by email
+    public UserViewDTO getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        return convertToViewDTO(user);
+    }
+
     // get all users
     public List<UserViewDTO> getAllUsers() {
         return userRepository.findAll().stream().map(this::convertToViewDTO).toList();

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import "./App.css";
 import MapView from "./MapView";
 
@@ -7,6 +7,38 @@ function App() {
   const [showModal, setShowModal] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  //check if user is logged in on component mount
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
+  //function to check if user is logged in
+  const checkLoginStatus = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/users/me`,
+        {
+          method: "GET",
+          credentials: "include", // include cookies for session
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        console.log("User is logged in:", data);
+        setIsLoggedIn(true);
+        setEmail(data.email);
+      } else {
+        console.log("User is not logged in");
+        setIsLoggedIn(false);
+        setEmail("");
+      }
+    } catch (error) {
+      console.error("Error checking login status:", error);
+      setIsLoggedIn(false);
+    }
+  };
+
   //update this to use useeffect later
   const handleLoginSignUpModal = () => {
     try {

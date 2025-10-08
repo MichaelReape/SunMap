@@ -48,7 +48,6 @@ public class UserController {
     }
 
     // login user
-    // will implement later with spring security
     @PostMapping("/login")
     public ResponseEntity<UserViewDTO> loginUser(@Valid @RequestBody LoginRequestDTO loginRequest,
             HttpServletResponse response, HttpServletRequest request) {
@@ -60,9 +59,13 @@ public class UserController {
     }
 
     // get user by id
+    // i want this to check if there is a valid session first
     @GetMapping("/{id}")
-    public UserViewDTO getUserById(@PathVariable long id) {
-        return userService.getUserById(id);
+    public ResponseEntity<UserViewDTO> getUserById(@PathVariable long id, Authentication auth) {
+        if (auth == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     // get all users
@@ -73,11 +76,12 @@ public class UserController {
 
     // delete later just for testing
     @GetMapping("/me")
-    public ResponseEntity<String> currentUser(Authentication auth) {
+    public ResponseEntity<UserViewDTO> currentUser(Authentication auth) {
+        // this should return the user based on the session
         if (auth == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not logged in");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        return ResponseEntity.ok("You are logged in as: " + auth.getName());
+        return ResponseEntity.ok(userService.getUserByEmail(auth.getName()));
     }
 
     // delete user by id
